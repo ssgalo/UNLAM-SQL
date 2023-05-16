@@ -1,0 +1,14 @@
+Dada la siguiente base de datos: 
+(Lamentablemente no puedo subrayar las claves primarias y foráneas)
+
+Almacén (Nro, Responsable)
+Artículo (CodArt, descripción, Precio)
+Material (CodMat, Descripción)
+Proveedor (CodProv, Nombre, Domicilio, Ciudad)
+Tiene (Nro, CodArt)
+Compuesto_por (CodArt, CodMat)
+Provisto_por (CodMat, CodProv)
+
+1.  Listar los nombres de los proveedores de la ciudad de La Plata.
+
+
