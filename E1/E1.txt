@@ -9,6 +9,15 @@ Tiene (Nro, CodArt)
 Compuesto_por (CodArt, CodMat)
 Provisto_por (CodMat, CodProv)
 
+-----CREACION DE TABLAS-----
+
+create table Almacen(Nro int not null primary key, Responsable varchar(20))
+create table Articulo(CodArt int not null primary key, Descripcion varchar(20), Precio int)
+create table Material(CodMat int not null primary key, Descripcion varchar(20))
+create table Proveedor(CodProv int not null primary key, Nombre varchar(20), Domicilio varchar(20), Ciudad varchar(20))
+create table Tiene (NroAlmacen int not null, CodArt int not null, constraint PKTiene primary key(NroAlmacen,CodArt), constraint FK1Tiene foreign key(NroAlmacen) references Almacen (Nro), constraint FK2Tiene foreign key (CodArt) references Articulo(CodArt))
+
+
 1.  Listar los nombres de los proveedores de la ciudad de La Plata.
 
 
