@@ -16,8 +16,91 @@ create table Articulo(CodArt int not null primary key, Descripcion varchar(20), 
 create table Material(CodMat int not null primary key, Descripcion varchar(20))
 create table Proveedor(CodProv int not null primary key, Nombre varchar(20), Domicilio varchar(20), Ciudad varchar(20))
 create table Tiene (NroAlmacen int not null, CodArt int not null, constraint PKTiene primary key(NroAlmacen,CodArt), constraint FK1Tiene foreign key(NroAlmacen) references Almacen (Nro), constraint FK2Tiene foreign key (CodArt) references Articulo(CodArt))
+create table Compuesto_por(CodArt int not null, CodMat int not null, constraint PKCompuesto primary key(CodArt, CodMat), constraint FKCompuesto foreign key(CodArt) references Articulo(CodArt), constraint FK2Compuesto foreign key (CodMat) references Material(CodMat))
+create table Provisto_por(CodMat int not null, CodProv int not null, constraint PKProvisto primary key (CodMat, CodProv), constraint FKProvisto foreign key (CodMat) references Material(CodMat), constraint FK2Provisto foreign key (CodProv) references Proveedor(CodProv))
+
+-----AÑADIMOS DATOS A LAS TABLAS-----
+
+--Insertar Almacenes--
+
+insert into Almacen values
+(1, 'Santiago'),
+(2, 'Lucas'),
+(3, 'Claudia'),
+(4, 'Azul'),
+(5, 'Javier'),
+(6, 'Marcos')
+
+--Insertar Artículos--
+insert into Articulo values
+(1, 'Mesa', 500),
+(2, 'Silla', 200),
+(3, 'Escritorio', 1500),
+(4, 'Lata', 30),
+(5, 'Jarra', 390),
+(6, 'Plato', 200)
+
+--Insertar Materiales--
+insert into Material values
+(1, 'Madera'),
+(2, 'Metal'),
+(3, 'Ceramica')
+
+--Insertar Proveedores--
+insert into Proveedor values
+(1, 'Maderera Jose', 'Chavez 630','La Plata'),
+(2, 'Maderera Raul', 'Varela 300','San Justo'),
+(3, 'Ceramicas Juan', 'Cavia 450','Belgrano'),
+(4, 'Metales SA', 'Salguero 100','Palermo'),
+(5, 'Ceramicas SA', 'Rivadavia 4000','Caballito'),
+(6, 'MetalTuyo', 'La Coyunda 809','Ituzaingo')
+(7, 'CeramicaNS', 'San Martin 200', 'La Plata')
+
+--Insertar la relacion Tiene (entre Almacen y Articulo)--
+insert into Tiene values
+(1, 1),
+(1,2),
+(1,3),
+(2,4),
+(3,5),
+(3,6),
+(4,1),
+(4,2),
+(4,3),
+(4,4),
+(4,5),
+(4,6),
+(5,1),
+(5,6),
+(6,4),
+(6,5)
+
+--Insertar la relacion Compuesto_Por (entre Articulo y Material)
+insert into Compuesto_por values
+(1,1),
+(2,1),
+(2,2),
+(3,1),
+(4,2),
+(5,3),
+(6,3)
+
+--Insertar la relacion Provisto_por (entre Material y Proveedor)
+insert into Provisto_por values
+(1,1),
+(1,2),
+(2,4),
+(2,6),
+(3,3),
+(3,5),
+(3,7)
+
+--EJERCICIOS--
+
+-- 1.  Listar los nombres de los proveedores de la ciudad de La Plata. --
+select * from Proveedor 
+where Ciudad = 'La Plata'
 
 
-1.  Listar los nombres de los proveedores de la ciudad de La Plata.
 
 
