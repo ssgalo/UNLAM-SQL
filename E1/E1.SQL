@@ -1,6 +1,7 @@
-Dada la siguiente base de datos: 
-(Lamentablemente no puedo subrayar las claves primarias y foráneas)
+------Dada la siguiente base de datos------ 
+--(Lamentablemente no puedo subrayar las claves primarias y foráneas)
 
+/*
 Almacén (Nro, Responsable)
 Artículo (CodArt, descripción, Precio)
 Material (CodMat, Descripción)
@@ -8,6 +9,7 @@ Proveedor (CodProv, Nombre, Domicilio, Ciudad)
 Tiene (Nro, CodArt)
 Compuesto_por (CodArt, CodMat)
 Provisto_por (CodMat, CodProv)
+*/
 
 -----CREACION DE TABLAS-----
 
@@ -53,7 +55,7 @@ insert into Proveedor values
 (3, 'Ceramicas Juan', 'Cavia 450','Belgrano'),
 (4, 'Metales SA', 'Salguero 100','Palermo'),
 (5, 'Ceramicas SA', 'Rivadavia 4000','Caballito'),
-(6, 'MetalTuyo', 'La Coyunda 809','Ituzaingo')
+(6, 'MetalTuyo', 'La Coyunda 809','Ituzaingo'),
 (7, 'CeramicaNS', 'San Martin 200', 'La Plata')
 
 --Insertar la relacion Tiene (entre Almacen y Articulo)--
@@ -100,6 +102,21 @@ insert into Provisto_por values
 -- 1.  Listar los nombres de los proveedores de la ciudad de La Plata. --
 select * from Proveedor 
 where Ciudad = 'La Plata'
+
+-- 2. Listar los números de artículos cuyo precio sea inferior a $10.
+select * from Articulo
+where Precio < 10
+
+-- 3. Listar los responsables de los almacenes.
+select distinct Responsable from Almacen
+
+-- 4. Listar los códigos de los materiales que provea el proveedor 1 y no los provea el proveedor 2
+select distinct CodMat from Provisto_por 
+where CodProv = 1
+and CodMat not in (
+		select distinct CodMat from Provisto_por 
+		where CodProv = 2
+	)
 
 
 
