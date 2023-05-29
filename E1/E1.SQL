@@ -111,12 +111,40 @@ where Precio < 10
 select distinct Responsable from Almacen
 
 -- 4. Listar los códigos de los materiales que provea el proveedor 1 y no los provea el proveedor 2
-select distinct CodMat from Provisto_por 
+select distinct CodMat
+from Provisto_por 
 where CodProv = 1
 and CodMat not in (
 		select distinct CodMat from Provisto_por 
 		where CodProv = 2
 	)
+
+-- 5. Listar los números de almacenes que almacenan el artículo Mesa.
+select t.NroAlmacen 
+from Tiene t 
+inner join Articulo a
+on a.Descripcion = 'Mesa' and a.CodArt = t.CodArt
+
+--  6. Listar los proveedores de Pergamino que se llamen Pérez.
+select * from Proveedor
+where Ciudad = 'Pergamino' and Nombre = 'Perez'
+
+-- 7. Listar los almacenes que contienen los artículos Mesa (cod 1) y los artículos Silla (cod 2) (ambos).
+select * from Tiene
+select * from Articulo
+select * from Almacen
+
+-- Si supiera los códigos de antemano, podría hacer asi:
+select NroAlmacen from Tiene
+where CodArt = 1
+and NroAlmacen in (select NroAlmacen from Tiene
+				where CodArt = 2)
+
+-- 8. Listar los artículos que cuesten más de $100 o que estén compuestos por el material de código 1.
+select * from Articulo
+where Precio > 100 or CodArt in (select CodArt from Compuesto_por where CodMat = 1)
+
+-- 9. Listar los materiales, código y descripción, provistos por proveedores de la ciudad de Rosario.
 
 
 
