@@ -145,7 +145,44 @@ select * from Articulo
 where Precio > 100 or CodArt in (select CodArt from Compuesto_por where CodMat = 1)
 
 -- 9. Listar los materiales, código y descripción, provistos por proveedores de la ciudad de Rosario.
+SELECT * FROM MATERIAL 
+where CodMat in (SELECT CodMat from Provisto_por 
+					where CodProv in (SELECT CodProv FROM Proveedor where Ciudad = 'Rosario')
+				)
+-- Otra opción
+SELECT M.CodMat, M.Descripcion
+FROM Material M
+INNER JOIN Provisto_por PP ON M.CodMat = PP.CodMat
+INNER JOIN Proveedor P ON PP.CodProv = P.CodProv
+WHERE P.Ciudad = 'Rosario';
 
+--  10. Listar el código, descripción y precio de los artículos que se almacenan en A1.
+SELECT A.CodArt, A.Descripcion, A.Precio 
+FROM Articulo A
+INNER JOIN Tiene T ON A.CodArt = T.CodArt
+INNER JOIN Almacen Al ON Al.Nro  = T.NroAlmacen
+WHERE Al.Nro = 1
+
+-- 11. Listar la descripción de los materiales que componen el artículo 2.
+SELECT M.Descripcion, CP.CodArt FROM Material M
+INNER JOIN Compuesto_por CP ON M.CodMat = CP.CodMat
+WHERE CP.CodArt = 2
+
+-- 12. Listar los nombres de los proveedores que proveen los materiales al almacén que Santiago tiene a su cargo.
+SELECT distinct P.Nombre, A.Responsable FROM Proveedor P
+INNER JOIN Provisto_por PP ON P.CodProv = PP.CodProv
+INNER JOIN Compuesto_por CP ON CP.CodMat = PP.CodMat
+INNER JOIN Tiene T ON T.CodArt =  CP.CodArt	
+INNER JOIN Almacen A ON A.Nro = T.NroAlmacen
+WHERE A.Responsable =  'Santiago'
+
+-- 14. Hallar los códigos y nombres de los proveedores que proveen al menos un material que se usa en algún artículo cuyo precio es mayor a $100
+SELECT DISTINCT P.CodProv, P.Nombre
+FROM Proveedor P
+INNER JOIN Provisto_por PP ON P.CodProv = PP.CodProv
+INNER JOIN Compuesto_por CP ON CP.CodMat = PP.CodMat
+INNER JOIN Articulo A ON A.CodArt = CP.CodArt
+WHERE A.Precio > 100
 
 
 
