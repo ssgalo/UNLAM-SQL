@@ -289,3 +289,22 @@ WHERE NOT EXISTS (	SELECT 1 FROM Material M
 					WHERE NOT EXISTS (
 					SELECT 1 FROM Compuesto_por CP
 					WHERE CP.CodMat = M.CodMat AND CP.CodArt = A.CodArt))
+
+-- 25. Listar las ciudades donde existan proveedores que provean todos los materiales.
+-- METODO SIN COCIENTE
+SELECT P.Ciudad FROM Proveedor P
+INNER JOIN (
+	SELECT CodProv FROM Provisto_por
+	GROUP BY CodProv
+	HAVING COUNT(*) = (SELECT COUNT(*) AS MaterialesTotales 
+					FROM Material)  
+	) AS MayoresProveedores ON P.CodProv = MayoresProveedores.CodProv
+
+-- MÉTODO CON COCIENTE
+SELECT P.Ciudad
+FROM Proveedor P
+WHERE NOT EXISTS (SELECT 1 FROM Material M
+					WHERE NOT EXISTS ( 
+						SELECT 1 FROM Provisto_por PP
+						WHERE PP.CodMat = M.CodMat AND PP.CodProv = P.CodProv
+					))
