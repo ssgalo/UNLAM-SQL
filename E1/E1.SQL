@@ -176,6 +176,14 @@ INNER JOIN Tiene T ON T.CodArt =  CP.CodArt
 INNER JOIN Almacen A ON A.Nro = T.NroAlmacen
 WHERE A.Responsable =  'Santiago'
 
+-- 13.   Listar códigos y descripciones de los artículos compuestos por al menos un material provisto por el proveedor López
+SELECT A.CodArt, A.Descripcion, P.Nombre 
+FROM Articulo A
+INNER JOIN Compuesto_por CP ON A.CodArt = CP.CodArt
+INNER JOIN Provisto_por PP ON CP.CodMat = PP.CodMat
+INNER JOIN Proveedor P ON PP.CodProv = P.CodProv
+WHERE P.Nombre = 'Maderera Jose'
+
 -- 14. Hallar los códigos y nombres de los proveedores que proveen al menos un material que se usa en algún artículo cuyo precio es mayor a $100
 SELECT DISTINCT P.CodProv, P.Nombre
 FROM Proveedor P
@@ -184,5 +192,100 @@ INNER JOIN Compuesto_por CP ON CP.CodMat = PP.CodMat
 INNER JOIN Articulo A ON A.CodArt = CP.CodArt
 WHERE A.Precio > 100
 
+-- 15. Listar los números de almacenes que tienen todos los artículos que incluyen el material con código 1 
+-- Es un cociente, que representa la operación división en álgebra relacional
+-- Este cociente primero obtiene de donde queres mostrar los datos, y después busca
+-- en la tabla donde queres poner la restricción. Luego busca en la tabla que conecta la primera con la segunda.
+-- Resumiendo: PRINCIPAL - RESTRICCIÓN - CONEXIÓN
 
+SELECT * FROM Almacen A
+WHERE NOT EXISTS (SELECT * FROM Compuesto_por CP
+					WHERE CP.CodMat = 1
+					AND NOT EXISTS (SELECT * FROM Tiene T
+									WHERE T.NroAlmacen = A.Nro
+									AND T.CodArt = CP.CodArt))
 
+-- 16. Listar los proveedores de San Justo que sean únicos proveedores de algún material.
+SELECT * FROM Proveedor
+WHERE Ciudad = 'San Justo' 
+AND CodProv IN (SELECT CodProv FROM Provisto_por
+				WHERE CodMat IN (
+				SELECT CodMat FROM Provisto_por
+				GROUP BY CodMat
+				HAVING COUNT(*) = 1))
+
+--17. Listar el/los artículo/s de mayor precio.
+SELECT * FROM Articulo
+WHERE Precio = (
+	SELECT MAX(Precio) 
+	FROM Articulo
+)
+
+-- 18. Listar el/los artículo/s de menor precio.
+SELECT * FROM Articulo
+WHERE Precio = (
+	SELECT MIN(Precio) 
+	FROM Articulo
+)
+
+-- 19. Listar el promedio de precios de los artículos en cada almacén.
+SELECT T.NroAlmacen, AVG(A.Precio) AS 'Promedio' FROM Tiene T
+INNER JOIN Articulo A ON T.CodArt = A.CodArt
+GROUP BY NroAlmacen
+
+-- 20. Listar los almacenes que almacenan la mayor cantidad de artículos.
+SELECT T.NroAlmacen, COUNT(*) AS CantidadDeArticulos 
+FROM Tiene T
+GROUP BY T.NroAlmacen
+HAVING COUNT(*) = (
+	SELECT MAX(CantAux) 
+	FROM ( SELECT COUNT(*) AS CantAux
+			FROM Tiene 
+			GROUP BY NroAlmacen ) AS Tabla -- ES NECESARIO ESTE AS PARA QUE CONSIDERE A LA SUBCONSULTA COMO UNA TABLA Y PUEDA CALCULAR EL MAX() YA QUE EL MAX SE HACE SOBRE TABLAS, NO SOBRE CONSULTAS
+	)
+
+-- 21. Listar los artículos compuestos por al menos 2 materiales.
+SELECT A.CodArt, A.Descripcion 
+FROM Articulo A
+INNER JOIN (
+		SELECT CodArt, COUNT(*) AS CantidadDeMateriales FROM Compuesto_por
+		GROUP BY CodArt
+		HAVING COUNT(*) >= 2
+		) AS Tabla1 ON A.CodArt = Tabla1.CodArt
+
+-- 22. Listar los artículos compuestos por exactamente 2 materiales.
+SELECT A.CodArt, A.Descripcion 
+FROM Articulo A
+INNER JOIN (
+		SELECT CodArt, COUNT(*) AS CantidadDeMateriales FROM Compuesto_por
+		GROUP BY CodArt
+		HAVING COUNT(*) = 2
+		) AS Tabla1 ON A.CodArt = Tabla1.CodArt
+
+-- 23. Listar los artículos que estén compuestos con hasta 2 materialesSELECT A.CodArt, A.Descripcion 
+FROM Articulo A
+INNER JOIN (
+		SELECT CodArt, COUNT(*) AS CantidadDeMateriales FROM Compuesto_por
+		GROUP BY CodArt
+		HAVING COUNT(*) <= 2
+		) AS Tabla1 ON A.CodArt = Tabla1.CodArt
+
+-- 24. Listar los artículos compuestos por todos los materiales.
+-- En mis tablas hay 5 materiales distintos
+
+-- METODO SIN COCIENTE
+SELECT A.CodArt, A.Descripcion 
+FROM Articulo A
+INNER JOIN (
+			SELECT CodArt, COUNT(*) AS CantidadDeMateriales FROM Compuesto_por
+			GROUP BY CodArt
+			HAVING COUNT(*) = ( SELECT COUNT(*) AS MaterialesTotales FROM Material ))
+			AS Tabla1 ON A.CodArt = Tabla1.CodArt
+
+-- MÉTODO CON COCIENTE (Recordar: Principal - RESTRICCIÓN - CONEXIÓN)
+SELECT A.CodArt, A.Descripcion
+FROM Articulo A
+WHERE NOT EXISTS (	SELECT 1 FROM Material M
+					WHERE NOT EXISTS (
+					SELECT 1 FROM Compuesto_por CP
+					WHERE CP.CodMat = M.CodMat AND CP.CodArt = A.CodArt))
