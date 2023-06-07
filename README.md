@@ -13,7 +13,7 @@ DCL: Revoke, Grant, Deny
 
 Joins: Inner, Left, Right, Cross, Full
 
-Aggregate Functions: MIN, MAX, AVG, SUM, COUNT.
+Aggregate Functions: MIN, MAX, AVG, SUM, COUNT. <br>
 GROUP BY, HAVING, ORDER BY
 DIVISION
 
